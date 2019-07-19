@@ -13,8 +13,8 @@
             <directory suffix="Test.php">./tests/Unit</directory>
         </testsuite>
 
-        <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+        <testsuite name="Integration">
+            <directory suffix="Test.php">./tests/Integration</directory>
         </testsuite>
     </testsuites>
     <filter>
@@ -24,6 +24,13 @@
     </filter>
     <php>
         <server name="APP_ENV" value="testing"/>
+        <!-- APP_KEY for integration http test -->
+        <server name="APP_KEY" value="base64:HaoSf5Y02/vR1a1WGy3qfQ/iZhON6PsLkF8QOBr8RyA= " />
+        <!-- Disable debug to speed up test -->
+        <server name="APP_DEBUG" value="false" />
+        <!-- Using SQLite in memory database test -->
+        <server name="DB_CONNECTION" value="sqlite" />
+        <server name="DB_DATABASE" value=":memory:" />
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
         <server name="MAIL_DRIVER" value="array"/>
