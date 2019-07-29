@@ -923,6 +923,7 @@ public function testRedirectAfterCreatedFailed()
 - Laracast's [Intuitive Integration Testing](https://laracasts.com/series/intuitive-integration-testing)
 - https://github.com/comradssolutions/Test-Driven-Laravel
 - https://blog.jgrossi.com/2018/solitary-or-sociable-testing-events-and-listeners-using-laravel/
+- https://symfonycasts.com/screencast/phpunit/
 
 # Các kỹ thuật khác
 (*)
