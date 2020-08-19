@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Http\Controllers\Web;
 
+use Illuminate\Support\Facades\Date;
 use Tests\TestCase;
 use App\Http\Controllers\Web\RegisterController;
 use Mockery;
@@ -95,7 +96,26 @@ class RegisterControllerTest extends TestCase
 
         $this->userService
             ->shouldReceive('verifyUser')
+            ->once()
             ->andReturn(true);
+
+        $view = $this->registerController->verify($fakeRequest);
+
+        $this->assertEquals('auth.verify.message', $view->name());
+    }
+
+    public function testUserAlreadyVerify()
+    {
+        $user = new User();
+        $user->email_verified_at = Date::now();
+        $fakeRequest = RegisterRequest::create('');
+
+        $this->userService
+            ->shouldReceive('findById')
+            ->andReturn($user);
+
+        $this->userService
+            ->shouldNotReceive('verifyUser');
 
         $view = $this->registerController->verify($fakeRequest);
 
@@ -126,6 +146,32 @@ class RegisterControllerTest extends TestCase
         $response = $this->registerController->resendVerificationLink($request);
 
         Mail::assertQueued(UserRegistered::class);
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(
+            action([RegisterController::class, 'showFormVerification']),
+            $response->headers->get('Location')
+        );
+        $this->assertTrue($response->getSession()->get('resent'));
+    }
+
+    public function testResendVerificationButUserHasVerified()
+    {
+        $inputs = [
+            'email' => 'email@example.com',
+        ];
+        $request = RegisterRequest::create(null, 'POST', $inputs);
+        $fakeUser = Mockery::mock(User::class)->makePartial();
+        $fakeUser->shouldReceive('hasVerifiedEmail')->andReturn(true);
+
+        $this->userService
+            ->shouldReceive('findByEmail')
+            ->with($inputs['email'])
+            ->andReturn($fakeUser);
+        Mail::fake();
+
+        $response = $this->registerController->resendVerificationLink($request);
+
+        Mail::assertNothingQueued();
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(
             action([RegisterController::class, 'showFormVerification']),

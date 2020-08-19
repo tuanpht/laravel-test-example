@@ -1,0 +1,13 @@
+{
+    "source": {
+        "directories": [
+            "app"
+        ]
+    },
+    "logs": {
+        "text": "infection.log"
+    },
+    "mutators": {
+        "@default": true
+    }
+}
